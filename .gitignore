@@ -122,3 +122,4 @@ Thumbs.db
 # Test results
 test-results/
 junit.xml
+.github/copilot-instructions.md
