@@ -1,125 +1,157 @@
-# NestJS User & Document Management System<p align="center">  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a></p><p align="center">A production-ready NestJS backend application for comprehensive user and document management with enterprise-grade security and scalability.</p><p align="center">  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT" /></p>## 🚀 Features### Core Functionality- **User Management**: Complete CRUD operations with role-based access control- **Document Management**: Secure file upload/download with metadata handling- **Authentication & Authorization**: JWT-based auth with refresh tokens and RBAC- **Ingestion Processing**: Background job processing with status tracking- **API Documentation**: Comprehensive Swagger/OpenAPI documentation### Security & Performance- **Enterprise Security**: Password hashing, input validation, CORS, rate limiting- **Scalable Architecture**: Designed for 1000+ users and 100k+ documents- **Database Optimization**: Proper indexing and query optimization- **File Security**: Type validation, size limits, secure storage### Development & Operations- **Comprehensive Testing**: 70%+ test coverage with unit and integration tests- **Docker Ready**: Multi-stage builds with production optimization- **CI/CD Ready**: GitHub Actions and Jenkins configurations- **Environment Management**: Separate dev/test/prod configurations## 🏗️ ArchitectureThis application follows **SOLID principles** and implements various design patterns:- **Repository Pattern**: Data access abstraction- **Strategy Pattern**: Multiple authentication methods- **Factory Pattern**: Entity creation- **Decorator Pattern**: Validation and authorization- **Observer Pattern**: Event handling### Project Structure```src/├── auth/              # Authentication module├── users/             # User management module├── documents/         # Document management module├── ingestion/         # Background processing module├── database/│   ├── entities/      # TypeORM entities│   └── seeds/         # Database seeding├── common/            # Shared utilities│   ├── guards/        # Authentication guards│   ├── decorators/    # Custom decorators│   ├── dto/           # Data transfer objects│   └── interfaces/    # Type definitions└── config/            # Configuration modules```## 🛠️ Technology Stack| Category | Technologies ||----------|-------------|| **Framework** | NestJS, Express || **Language** | TypeScript || **Database** | PostgreSQL, TypeORM || **Authentication** | JWT, Passport || **Validation** | class-validator, class-transformer || **Documentation** | Swagger/OpenAPI || **Testing** | Jest, Supertest || **File Upload** | Multer || **Containerization** | Docker, Docker Compose |## 🚀 Quick Start### Prerequisites- Node.js (v16 or higher)- PostgreSQL (v12 or higher)- Docker (optional)### Installation```bash# Clone the repositorygit clone <repository-url>cd jk_tech# Install dependenciesnpm install# Copy environment configurationcp .env.example .env
-# Edit .env with your database credentials
-```
+# NestJS User & Document Management System
 
-### Database Setup
+> A production-ready NestJS backend application with comprehensive user and document management, enterprise-grade security, and 73.55% test coverage.
+
+![TypeScript](https://img.shields.io/badge/typescript-007ACC.svg?style=flat-square&logo=typescript&logoColor=white)
+![NestJS](https://img.shields.io/badge/nestjs-E0234E.svg?style=flat-square&logo=nestjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgresql-316192.svg?style=flat-square&logo=postgresql&logoColor=white)
+![Test Coverage](https://img.shields.io/badge/coverage-73.55%25-brightgreen?style=flat-square)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)
+
+## ✨ Key Features
+
+- 🔐 **JWT Authentication** with role-based access control (RBAC)
+- 📁 **Document Management** with secure file upload/download
+- 👥 **User Management** with comprehensive CRUD operations
+- 🔄 **Data Ingestion** with background job processing
+- 📊 **Health Monitoring** with metrics and logging
+- 🧪 **73.55% Test Coverage** with comprehensive unit tests
+- 🐳 **Docker Ready** with production optimization
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** v16+ 
+- **PostgreSQL** v12+
+- **Docker** (optional)
+
+### Installation
 
 ```bash
-# Using Docker (recommended)
-docker-compose up -d postgres
+# 1. Clone repository
+git clone https://github.com/RahulPalll/JK_Teck_assignment.git
+cd JK_Teck_assignment
 
-# Or install PostgreSQL locally and create database
-createdb nestjs_app
-```
+# 2. Install dependencies
+npm install
 
-### Running the Application
+# 3. Environment setup
+cp .env.example .env
+# Edit .env with your configuration
 
-```bash
-# Development mode with hot reload
+# 4. Database setup (choose one)
+docker-compose up -d postgres  # Using Docker
+# OR
+createdb user_document_management  # Local PostgreSQL
+
+# 5. Run application
 npm run start:dev
-
-# Production mode
-npm run start:prod
-
-# Watch mode
-npm run start
 ```
 
-The application will be available at:
-- **API**: http://localhost:3000
-- **Swagger Documentation**: http://localhost:3000/api
+### 🌐 API Access
+- **Application**: http://localhost:3000
+- **Health Check**: http://localhost:3000/health
+- **API Documentation**: http://localhost:3000/api
+- **Metrics**: http://localhost:3000/metrics
+## 🏗️ Architecture
 
-## 🧪 Testing
+Built with **SOLID principles** and enterprise design patterns:
 
+- 🏛️ **Repository Pattern** - Data access abstraction
+- 🔄 **Strategy Pattern** - Authentication methods
+- 🏭 **Factory Pattern** - Entity creation
+- 🎨 **Decorator Pattern** - Validation & authorization
+- 👁️ **Observer Pattern** - Event handling
+
+### 📁 Project Structure
+
+```
+src/
+├── auth/              # 🔐 Authentication & JWT
+├── users/             # 👥 User management
+├── documents/         # 📁 File handling
+├── ingestion/         # 🔄 Background processing
+├── health/            # 📊 System monitoring
+├── common/            # 🛠️ Shared utilities
+│   ├── guards/        # 🛡️ Security guards
+│   ├── decorators/    # 🎨 Custom decorators
+│   └── dto/           # 📋 Data transfer objects
+├── database/          # 🗄️ Entities & migrations
+└── config/            # ⚙️ Configuration
+```
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| **Framework** | NestJS + Express |
+| **Language** | TypeScript |
+| **Database** | PostgreSQL + TypeORM |
+| **Auth** | JWT + Passport |
+| **Validation** | class-validator |
+| **Testing** | Jest + Supertest |
+| **Docs** | Swagger/OpenAPI |
+| **DevOps** | Docker + CI/CD |
+
+## 🔐 API Endpoints
+
+### Authentication
+```bash
+POST /auth/register    # Register new user
+POST /auth/login       # User login
+POST /auth/refresh     # Refresh token
+POST /auth/logout      # User logout
+GET  /auth/profile     # Get user profile
+```
+
+### Users (RBAC Protected)
+```bash
+GET    /users          # List users (paginated)
+GET    /users/:id      # Get user details
+PUT    /users/:id      # Update user
+DELETE /users/:id      # Delete user
+GET    /users/stats    # User statistics
+```
+
+### Documents
+```bash
+POST   /documents/upload     # Upload file
+GET    /documents           # List documents
+GET    /documents/:id       # Get document
+GET    /documents/:id/download  # Download file
+PUT    /documents/:id       # Update metadata
+DELETE /documents/:id       # Delete document
+```
+
+### System Monitoring
+```bash
+GET /health           # Health check
+GET /health/detailed  # Detailed health info
+GET /metrics          # Application metrics
+```
+
+## 🧪 Testing & Quality
+
+### Test Coverage: **73.55%**
 ```bash
 # Run all tests
-npm run test
+npm test
 
-# Run tests in watch mode
+# Watch mode
 npm run test:watch
 
-# Run tests with coverage
+# Coverage report
 npm run test:cov
 
-# Run E2E tests
+# E2E tests
 npm run test:e2e
 ```
 
-## 📊 Database Seeding
-
-To populate the database with test data for development:
-
-```bash
-# Seed database with sample data
-npm run seed
-
-# This creates:
-# - 1000+ users with different roles
-# - 100k+ documents with various metadata
-# - Sample ingestion processes
-```
-
-## 🔐 API Authentication
-
-### Getting Started
-1. **Register a new user**:
-   ```bash
-   POST /auth/register
-   {
-     "email": "user@example.com",
-     "password": "securepassword",
-     "firstName": "John",
-     "lastName": "Doe"
-   }
-   ```
-
-2. **Login to get tokens**:
-   ```bash
-   POST /auth/login
-   {
-     "email": "user@example.com",
-     "password": "securepassword"
-   }
-   ```
-
-3. **Use the access token in headers**:
-   ```bash
-   Authorization: Bearer <your-access-token>
-   ```
-
-### User Roles
-- **Admin**: Full system access
-- **Editor**: Can manage documents and users
-- **Viewer**: Read-only access
-
-## 📁 API Endpoints
-
-### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Refresh access token
-- `POST /auth/logout` - User logout
-
-### Users
-- `GET /users` - List users (paginated)
-- `GET /users/:id` - Get user by ID
-- `PUT /users/:id` - Update user
-- `DELETE /users/:id` - Delete user
-- `GET /users/stats` - Get user statistics
-
-### Documents
-- `POST /documents/upload` - Upload document
-- `GET /documents` - List documents (paginated)
-- `GET /documents/:id` - Get document details
-- `GET /documents/:id/download` - Download document
-- `PUT /documents/:id` - Update document metadata
-- `DELETE /documents/:id` - Delete document
-
-### Ingestion
-- `POST /ingestion` - Start new ingestion process
-- `GET /ingestion` - List ingestion processes
-- `GET /ingestion/:id` - Get ingestion status
-- `PUT /ingestion/:id/status` - Update ingestion status
+### Code Quality Tools
+- ✅ **ESLint** - Code linting
+- ✅ **Prettier** - Code formatting  
+- ✅ **Husky** - Pre-commit hooks
+- ✅ **TypeScript** - Type safety
 
 ## 🐳 Docker Deployment
 
@@ -129,141 +161,105 @@ npm run seed
 docker-compose up -d
 
 # View logs
-docker-compose logs -f app
-
-# Stop services
-docker-compose down
+docker-compose logs -f
 ```
 
 ### Production
 ```bash
-# Build production image
+# Build image
 docker build -t nestjs-app .
 
-# Run with production config
-docker run -d \
-  --name nestjs-app \
-  -p 3000:3000 \
-  --env-file .env.production \
-  nestjs-app
+# Run container
+docker run -p 3000:3000 nestjs-app
 ```
 
 ## 🔄 CI/CD Pipeline
 
 ### GitHub Actions
-The project includes automated CI/CD with:
-- **Testing**: Unit and E2E tests on every push
-- **Code Quality**: ESLint and Prettier checks
-- **Security**: Dependency vulnerability scanning
-- **Deployment**: Automated deployment to staging/production
+- ✅ Automated testing on every push
+- ✅ Code quality checks (ESLint, Prettier)
+- ✅ Security vulnerability scanning
+- ✅ Docker image building
+- ✅ Test coverage reporting
 
-### Jenkins Pipeline
-Alternative Jenkins configuration available for:
-- Multi-branch pipeline support
-- Automated testing and quality gates
-- Docker image building and deployment
-- Environment-specific deployments
-
-## 📈 Performance & Monitoring
-
-### Database Performance
-- **Indexing**: Strategic database indexes for optimal query performance
-- **Pagination**: Efficient pagination for large datasets
-- **Query Optimization**: Optimized TypeORM queries with relations
-
-### File Handling
-- **Chunked Upload**: Support for large file uploads
-- **Stream Processing**: Memory-efficient file processing
-- **Storage Optimization**: Configurable storage backends
-
-### Monitoring
-- **Health Checks**: Built-in health check endpoints
-- **Metrics**: Application performance metrics
-- **Logging**: Structured logging with different levels
+### Jenkins Support
+- ✅ Multi-branch pipeline
+- ✅ Quality gates
+- ✅ Automated deployment
 
 ## 🛡️ Security Features
 
 ### Authentication & Authorization
-- **JWT Tokens**: Secure token-based authentication
-- **Refresh Tokens**: Automatic token refresh mechanism
-- **Role-Based Access**: Granular permission system
-- **Password Security**: Bcrypt hashing with salt rounds
+- 🔐 **JWT tokens** with refresh mechanism
+- 👤 **Role-based access control** (Admin, Editor, Viewer)
+- 🔒 **Password hashing** with bcrypt
+- ⏰ **Token expiration** handling
 
-### Input Validation
-- **Request Validation**: Comprehensive input validation
-- **File Upload Security**: Type and size validation
-- **SQL Injection Prevention**: TypeORM parameterized queries
-- **XSS Protection**: Input sanitization
+### Input Security
+- ✅ **Request validation** with class-validator
+- ✅ **File upload security** (type & size limits)
+- ✅ **SQL injection prevention** with TypeORM
+- ✅ **XSS protection** through sanitization
 
-### Security Headers
-- **CORS**: Configurable cross-origin requests
-- **Rate Limiting**: Protection against abuse
-- **Helmet**: Security headers middleware
+### Infrastructure Security
+- 🛡️ **CORS configuration**
+- 🚫 **Rate limiting**
+- 🔒 **Security headers** with Helmet
+- 📝 **Audit logging**
 
-## 📝 Development Guidelines
+## 📊 Performance Features
 
-### Code Quality
-- **ESLint**: Enforced coding standards
-- **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks for quality checks
-- **TypeScript**: Strict type checking
+### Database Optimization
+- 📈 **Strategic indexing** for query performance
+- 📄 **Efficient pagination** for large datasets
+- 🔄 **Connection pooling** and optimization
+- 📊 **Query performance monitoring**
 
-### Testing Strategy
-- **Unit Tests**: Individual component testing
-- **Integration Tests**: Module interaction testing
-- **E2E Tests**: Complete workflow testing
-- **Test Coverage**: Minimum 70% coverage requirement
+### File Handling
+- 📁 **Chunked uploads** for large files
+- 🔄 **Stream processing** for memory efficiency
+- 💾 **Configurable storage** backends
+- 🗜️ **File compression** support
 
-### Documentation
-- **Swagger**: Interactive API documentation
-- **JSDoc**: Inline code documentation
-- **README**: Comprehensive setup guides
-- **Architecture Docs**: System design documentation
-
-## 🚀 Deployment Strategies
+## 🚀 Deployment
 
 ### Environment Configuration
 ```bash
 # Development
 npm run start:dev
 
-# Staging
-npm run build
-NODE_ENV=staging npm run start:prod
-
 # Production
-npm run build
-NODE_ENV=production npm run start:prod
+npm run build && npm run start:prod
 ```
 
-### Scaling Considerations
-- **Horizontal Scaling**: Multiple application instances
-- **Database Scaling**: Read replicas and connection pooling
-- **File Storage**: CDN integration for static assets
-- **Caching**: Redis integration for session and data caching
+### Scaling Options
+- 🔄 **Horizontal scaling** with load balancers
+- 🗄️ **Database read replicas**
+- 💾 **Redis caching** integration
+- 📁 **CDN integration** for file serving
+
+## 📚 Documentation
+
+- 📖 **API Documentation**: http://localhost:3000/api
+- 🏗️ **Architecture Guide**: [GIT_WORKFLOW_SUMMARY.md](./GIT_WORKFLOW_SUMMARY.md)
+- 🧪 **Test Coverage Report**: [TEST_COVERAGE_REPORT.md](./TEST_COVERAGE_REPORT.md)
+- 🔧 **Development Setup**: See Quick Start above
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 🆘 Support
+---
 
-For support and questions:
-- 📧 Email: support@example.com
-- 📚 Documentation: [API Docs](http://localhost:3000/api)
-- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
-
-## 🏆 Acknowledgments
-
-- Built with [NestJS](https://nestjs.com/)
-- Database powered by [PostgreSQL](https://postgresql.org/)
-- Authentication via [Passport.js](http://passportjs.org/)
-- Documentation with [Swagger](https://swagger.io/)
+<p align="center">
+  <strong>Built with ❤️ using NestJS</strong><br>
+  <sub>Enterprise-grade • Production-ready • Test-driven</sub>
+</p>
