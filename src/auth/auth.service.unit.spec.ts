@@ -23,10 +23,10 @@ describe('AuthService (Unit)', () => {
   const mockConfigService = {
     get: jest.fn((key: string) => {
       const config = {
-        'JWT_SECRET': 'test-secret',
-        'JWT_EXPIRES_IN': '24h',
-        'JWT_REFRESH_SECRET': 'test-refresh-secret',
-        'JWT_REFRESH_EXPIRES_IN': '7d',
+        JWT_SECRET: 'test-secret',
+        JWT_EXPIRES_IN: '24h',
+        JWT_REFRESH_SECRET: 'test-refresh-secret',
+        JWT_REFRESH_EXPIRES_IN: '7d',
       };
       return config[key];
     }),

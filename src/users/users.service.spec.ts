@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from './users.service';
 import { User } from '../database/entities';
@@ -59,7 +63,7 @@ describe('UsersService', () => {
   beforeEach(async () => {
     // Reset all mocks before each test
     jest.clearAllMocks();
-    
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -109,7 +113,9 @@ describe('UsersService', () => {
     it('should throw ConflictException when user already exists', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should set default role to VIEWER when not provided', async () => {
@@ -207,13 +213,20 @@ describe('UsersService', () => {
       const updatedUser = { ...mockUser, ...updateUserDto };
       // Simulate the fullName getter with updated values
       Object.defineProperty(updatedUser, 'fullName', {
-        get() { return `${this.firstName} ${this.lastName}`; },
+        get() {
+          return `${this.firstName} ${this.lastName}`;
+        },
         enumerable: true,
-        configurable: true
+        configurable: true,
       });
       mockRepository.save.mockResolvedValue(updatedUser);
 
-      const result = await service.update('1', updateUserDto, '1', UserRole.VIEWER);
+      const result = await service.update(
+        '1',
+        updateUserDto,
+        '1',
+        UserRole.VIEWER,
+      );
 
       expect(result.firstName).toEqual(updateUserDto.firstName);
       expect(result.lastName).toEqual(updateUserDto.lastName);
@@ -224,7 +237,12 @@ describe('UsersService', () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
       mockRepository.save.mockResolvedValue({ ...mockUser, ...updateUserDto });
 
-      const result = await service.update('1', updateUserDto, '2', UserRole.ADMIN);
+      const result = await service.update(
+        '1',
+        updateUserDto,
+        '2',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual({ ...mockUser, ...updateUserDto });
     });
@@ -232,24 +250,34 @@ describe('UsersService', () => {
     it('should throw ForbiddenException when non-admin tries to update another user', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.update('1', updateUserDto, '2', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.update('1', updateUserDto, '2', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw ForbiddenException when non-admin tries to change role', async () => {
       const roleUpdate = { role: UserRole.ADMIN };
       jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.update('1', roleUpdate, '1', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.update('1', roleUpdate, '1', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw ConflictException when email already exists', async () => {
       const emailUpdate = { email: 'existing@example.com' };
-      const existingUser = { ...mockUser, id: '2', email: 'existing@example.com' };
+      const existingUser = {
+        ...mockUser,
+        id: '2',
+        email: 'existing@example.com',
+      };
 
       jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
       mockRepository.findOne.mockResolvedValue(existingUser);
 
-      await expect(service.update('1', emailUpdate, '1', UserRole.VIEWER)).rejects.toThrow(ConflictException);
+      await expect(
+        service.update('1', emailUpdate, '1', UserRole.VIEWER),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
@@ -260,24 +288,35 @@ describe('UsersService', () => {
     };
 
     it('should change password successfully', async () => {
-      const userWithPassword = { ...mockUser, password: await bcrypt.hash('current123', 12) };
+      const userWithPassword = {
+        ...mockUser,
+        password: await bcrypt.hash('current123', 12),
+      };
       mockRepository.findOne.mockResolvedValue(userWithPassword);
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
-      jest.spyOn(bcrypt, 'hash').mockResolvedValue('newhashedpassword' as never);
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockResolvedValue('newhashedpassword' as never);
 
       await service.changePassword('1', changePasswordDto, '1');
 
-      expect(mockRepository.update).toHaveBeenCalledWith('1', { password: 'newhashedpassword' });
+      expect(mockRepository.update).toHaveBeenCalledWith('1', {
+        password: 'newhashedpassword',
+      });
     });
 
     it('should throw ForbiddenException when user tries to change another users password', async () => {
-      await expect(service.changePassword('1', changePasswordDto, '2')).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.changePassword('1', changePasswordDto, '2'),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw NotFoundException when user not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.changePassword('1', changePasswordDto, '1')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.changePassword('1', changePasswordDto, '1'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -292,7 +331,9 @@ describe('UsersService', () => {
     });
 
     it('should throw ForbiddenException when non-admin tries to delete', async () => {
-      await expect(service.remove('1', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(service.remove('1', UserRole.VIEWER)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -300,11 +341,11 @@ describe('UsersService', () => {
     it('should return user statistics', async () => {
       mockRepository.count
         .mockResolvedValueOnce(100) // total
-        .mockResolvedValueOnce(80)  // active
-        .mockResolvedValueOnce(15)  // inactive
-        .mockResolvedValueOnce(5)   // suspended
-        .mockResolvedValueOnce(10)  // admins
-        .mockResolvedValueOnce(30)  // editors
+        .mockResolvedValueOnce(80) // active
+        .mockResolvedValueOnce(15) // inactive
+        .mockResolvedValueOnce(5) // suspended
+        .mockResolvedValueOnce(10) // admins
+        .mockResolvedValueOnce(30) // editors
         .mockResolvedValueOnce(60); // viewers
 
       const result = await service.getStats();

@@ -3,7 +3,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IngestionType } from '../../common/enums';
 
 export class CreateIngestionDto {
-  @ApiProperty({ description: 'Type of ingestion process', enum: IngestionType })
+  @ApiProperty({
+    description: 'Type of ingestion process',
+    enum: IngestionType,
+  })
   @IsEnum(IngestionType)
   type: IngestionType;
 
@@ -12,7 +15,10 @@ export class CreateIngestionDto {
   @IsObject()
   parameters?: Record<string, any>;
 
-  @ApiPropertyOptional({ description: 'Total number of items to process', minimum: 0 })
+  @ApiPropertyOptional({
+    description: 'Total number of items to process',
+    minimum: 0,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)

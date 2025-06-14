@@ -19,7 +19,10 @@ export class IngestionService {
     private ingestionRepository: Repository<IngestionProcess>,
   ) {}
 
-  async create(createIngestionDto: CreateIngestionDto, userId: string): Promise<IngestionProcess> {
+  async create(
+    createIngestionDto: CreateIngestionDto,
+    userId: string,
+  ): Promise<IngestionProcess> {
     const ingestion = this.ingestionRepository.create({
       ...createIngestionDto,
       initiatedById: userId,
@@ -36,7 +39,12 @@ export class IngestionService {
     status?: IngestionStatus,
     type?: IngestionType,
   ): Promise<PaginationResult<IngestionProcess>> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC' } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+    } = paginationDto;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.ingestionRepository
@@ -71,7 +79,11 @@ export class IngestionService {
     };
   }
 
-  async findOne(id: string, userId: string, userRole: UserRole): Promise<IngestionProcess> {
+  async findOne(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<IngestionProcess> {
     const queryBuilder = this.ingestionRepository
       .createQueryBuilder('ingestion')
       .leftJoinAndSelect('ingestion.initiatedBy', 'initiatedBy')
@@ -101,23 +113,33 @@ export class IngestionService {
 
     // Check permissions - only owner or admin can update
     if (ingestion.initiatedById !== userId && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only update your own ingestion processes');
+      throw new ForbiddenException(
+        'You can only update your own ingestion processes',
+      );
     }
 
     Object.assign(ingestion, updateIngestionDto);
     return this.ingestionRepository.save(ingestion);
   }
 
-  async startProcess(id: string, userId: string, userRole: UserRole): Promise<IngestionProcess> {
+  async startProcess(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<IngestionProcess> {
     const ingestion = await this.findOne(id, userId, userRole);
 
     if (ingestion.status !== IngestionStatus.PENDING) {
-      throw new BadRequestException('Ingestion process is not in pending status');
+      throw new BadRequestException(
+        'Ingestion process is not in pending status',
+      );
     }
 
     // Check permissions
     if (ingestion.initiatedById !== userId && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only start your own ingestion processes');
+      throw new ForbiddenException(
+        'You can only start your own ingestion processes',
+      );
     }
 
     ingestion.status = IngestionStatus.PROCESSING;
@@ -141,7 +163,9 @@ export class IngestionService {
     const ingestion = await this.findOne(id, userId, userRole);
 
     if (ingestion.status !== IngestionStatus.PROCESSING) {
-      throw new BadRequestException('Ingestion process is not in processing status');
+      throw new BadRequestException(
+        'Ingestion process is not in processing status',
+      );
     }
 
     ingestion.status = IngestionStatus.COMPLETED;
@@ -160,7 +184,9 @@ export class IngestionService {
     const ingestion = await this.findOne(id, userId, userRole);
 
     if (ingestion.status !== IngestionStatus.PROCESSING) {
-      throw new BadRequestException('Ingestion process is not in processing status');
+      throw new BadRequestException(
+        'Ingestion process is not in processing status',
+      );
     }
 
     ingestion.status = IngestionStatus.FAILED;
@@ -175,18 +201,25 @@ export class IngestionService {
 
     // Check permissions - only owner or admin can delete
     if (ingestion.initiatedById !== userId && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only delete your own ingestion processes');
+      throw new ForbiddenException(
+        'You can only delete your own ingestion processes',
+      );
     }
 
     // Cannot delete running processes
     if (ingestion.status === IngestionStatus.PROCESSING) {
-      throw new BadRequestException('Cannot delete a running ingestion process');
+      throw new BadRequestException(
+        'Cannot delete a running ingestion process',
+      );
     }
 
     await this.ingestionRepository.remove(ingestion);
   }
 
-  async getStats(userId?: string, userRole?: UserRole): Promise<{
+  async getStats(
+    userId?: string,
+    userRole?: UserRole,
+  ): Promise<{
     total: number;
     pending: number;
     processing: number;
@@ -195,7 +228,8 @@ export class IngestionService {
     byType: Record<IngestionType, number>;
     averageDuration: number;
   }> {
-    const queryBuilder = this.ingestionRepository.createQueryBuilder('ingestion');
+    const queryBuilder =
+      this.ingestionRepository.createQueryBuilder('ingestion');
 
     // If not admin, only count user's processes
     if (userRole !== UserRole.ADMIN && userId) {
@@ -204,10 +238,30 @@ export class IngestionService {
 
     const [total, pending, processing, completed, failed] = await Promise.all([
       queryBuilder.getCount(),
-      queryBuilder.clone().andWhere('ingestion.status = :status', { status: IngestionStatus.PENDING }).getCount(),
-      queryBuilder.clone().andWhere('ingestion.status = :status', { status: IngestionStatus.PROCESSING }).getCount(),
-      queryBuilder.clone().andWhere('ingestion.status = :status', { status: IngestionStatus.COMPLETED }).getCount(),
-      queryBuilder.clone().andWhere('ingestion.status = :status', { status: IngestionStatus.FAILED }).getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('ingestion.status = :status', {
+          status: IngestionStatus.PENDING,
+        })
+        .getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('ingestion.status = :status', {
+          status: IngestionStatus.PROCESSING,
+        })
+        .getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('ingestion.status = :status', {
+          status: IngestionStatus.COMPLETED,
+        })
+        .getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('ingestion.status = :status', {
+          status: IngestionStatus.FAILED,
+        })
+        .getCount(),
     ]);
 
     // Get type distribution
@@ -224,10 +278,16 @@ export class IngestionService {
 
     // Get average duration for completed processes
     const durationResult = await queryBuilder
-      .select('AVG(EXTRACT(EPOCH FROM (ingestion.completedAt - ingestion.startedAt)))', 'avgDuration')
-      .where('ingestion.status = :status AND ingestion.startedAt IS NOT NULL AND ingestion.completedAt IS NOT NULL', {
-        status: IngestionStatus.COMPLETED,
-      })
+      .select(
+        'AVG(EXTRACT(EPOCH FROM (ingestion.completedAt - ingestion.startedAt)))',
+        'avgDuration',
+      )
+      .where(
+        'ingestion.status = :status AND ingestion.startedAt IS NOT NULL AND ingestion.completedAt IS NOT NULL',
+        {
+          status: IngestionStatus.COMPLETED,
+        },
+      )
       .getRawOne();
 
     return {
@@ -248,7 +308,7 @@ export class IngestionService {
       try {
         // Simulate processing time
         const processingTime = Math.random() * 10000 + 5000; // 5-15 seconds
-        
+
         // Update progress periodically
         const updateInterval = setInterval(async () => {
           if (ingestion.totalItems > 0) {
@@ -263,7 +323,7 @@ export class IngestionService {
         // Complete after processing time
         setTimeout(async () => {
           clearInterval(updateInterval);
-          
+
           ingestion.status = IngestionStatus.COMPLETED;
           ingestion.completedAt = new Date();
           ingestion.processedItems = ingestion.totalItems;
@@ -275,7 +335,6 @@ export class IngestionService {
 
           await this.ingestionRepository.save(ingestion);
         }, processingTime);
-
       } catch (error) {
         ingestion.status = IngestionStatus.FAILED;
         ingestion.completedAt = new Date();

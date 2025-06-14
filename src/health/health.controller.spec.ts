@@ -70,7 +70,9 @@ describe('HealthController', () => {
         },
       };
 
-      mockHealthService.getDetailedHealthStatus.mockResolvedValue(mockDetailedHealth);
+      mockHealthService.getDetailedHealthStatus.mockResolvedValue(
+        mockDetailedHealth,
+      );
 
       const result = await controller.detailedCheck();
 

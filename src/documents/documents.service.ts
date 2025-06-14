@@ -9,10 +9,9 @@ import { Repository } from 'typeorm';
 import { Document } from '../database/entities';
 import { CreateDocumentDto, UpdateDocumentDto } from './dto';
 import { PaginationDto } from '../common/dto';
-import { PaginationResult, FileUploadResult } from '../common/interfaces';
+import { PaginationResult } from '../common/interfaces';
 import { DocumentStatus, UserRole } from '../common/enums';
 import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class DocumentsService {
@@ -48,7 +47,9 @@ export class DocumentsService {
     // Validate file size (10MB limit)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      throw new BadRequestException('File size too large. Maximum size is 10MB');
+      throw new BadRequestException(
+        'File size too large. Maximum size is 10MB',
+      );
     }
 
     const document = this.documentRepository.create({
@@ -72,7 +73,12 @@ export class DocumentsService {
     search?: string,
     status?: DocumentStatus,
   ): Promise<PaginationResult<Document>> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC' } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+    } = paginationDto;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.documentRepository
@@ -113,7 +119,11 @@ export class DocumentsService {
     };
   }
 
-  async findOne(id: string, userId: string, userRole: UserRole): Promise<Document> {
+  async findOne(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<Document> {
     const queryBuilder = this.documentRepository
       .createQueryBuilder('document')
       .leftJoinAndSelect('document.createdBy', 'createdBy')
@@ -183,7 +193,11 @@ export class DocumentsService {
     await this.documentRepository.remove(document);
   }
 
-  async downloadFile(id: string, userId: string, userRole: UserRole): Promise<{
+  async downloadFile(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<{
     path: string;
     filename: string;
     mimetype: string;
@@ -201,7 +215,10 @@ export class DocumentsService {
     };
   }
 
-  async getStats(userId?: string, userRole?: UserRole): Promise<{
+  async getStats(
+    userId?: string,
+    userRole?: UserRole,
+  ): Promise<{
     total: number;
     draft: number;
     published: number;
@@ -218,9 +235,22 @@ export class DocumentsService {
 
     const [total, draft, published, archived] = await Promise.all([
       queryBuilder.getCount(),
-      queryBuilder.clone().andWhere('document.status = :status', { status: DocumentStatus.DRAFT }).getCount(),
-      queryBuilder.clone().andWhere('document.status = :status', { status: DocumentStatus.PUBLISHED }).getCount(),
-      queryBuilder.clone().andWhere('document.status = :status', { status: DocumentStatus.ARCHIVED }).getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('document.status = :status', { status: DocumentStatus.DRAFT })
+        .getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('document.status = :status', {
+          status: DocumentStatus.PUBLISHED,
+        })
+        .getCount(),
+      queryBuilder
+        .clone()
+        .andWhere('document.status = :status', {
+          status: DocumentStatus.ARCHIVED,
+        })
+        .getCount(),
     ]);
 
     // Get MIME type distribution
@@ -230,10 +260,10 @@ export class DocumentsService {
       .groupBy('document.mimetype')
       .getRawMany();
 
-    const byMimeType = mimeTypeStats.reduce((acc, stat) => {
-      acc[stat.document_mimetype] = parseInt(stat.count);
+    const byMimeType: Record<string, number> = mimeTypeStats.reduce((acc, stat) => {
+      acc[stat.document_mimetype as string] = parseInt(stat.count as string, 10);
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     // Get total size
     const sizeResult = await queryBuilder
@@ -246,7 +276,7 @@ export class DocumentsService {
       published,
       archived,
       byMimeType,
-      totalSize: parseInt(sizeResult.totalSize) || 0,
+      totalSize: parseInt(sizeResult?.totalSize as string, 10) || 0,
     };
   }
 }

@@ -8,7 +8,7 @@ describe('GetUser Decorator Logic', () => {
     sub: 'user123',
     email: 'test@example.com',
     role: 'admin',
-    name: 'Test User'
+    name: 'Test User',
   };
 
   // This is the actual function logic inside the GetUser decorator
@@ -20,13 +20,13 @@ describe('GetUser Decorator Logic', () => {
 
   beforeEach(() => {
     mockRequest = {
-      user: mockUser
+      user: mockUser,
     };
 
     const mockHttpArgumentsHost = {
       getRequest: jest.fn().mockReturnValue(mockRequest),
       getResponse: jest.fn(),
-      getNext: jest.fn()
+      getNext: jest.fn(),
     };
 
     mockExecutionContext = {
@@ -37,7 +37,7 @@ describe('GetUser Decorator Logic', () => {
       getArgByIndex: jest.fn(),
       switchToRpc: jest.fn(),
       switchToWs: jest.fn(),
-      getType: jest.fn()
+      getType: jest.fn(),
     } as any;
   });
 

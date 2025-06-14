@@ -1,4 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -18,7 +24,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<RequestWithUser>();
     const response = ctx.getResponse<Response>();
-    
+
     const { method, url, headers, ip } = request;
     const userAgent = headers['user-agent'] || '';
     const requestId = uuidv4();
@@ -34,7 +40,7 @@ export class LoggingInterceptor implements NestInterceptor {
       url,
       userAgent,
       ip,
-      userId: request.user?.sub
+      userId: request.user?.sub,
     };
 
     this.appLogger.setContext(logContext);
@@ -44,26 +50,30 @@ export class LoggingInterceptor implements NestInterceptor {
       tap(() => {
         const responseTime = Date.now() - startTime;
         this.appLogger.logResponse(
-          method, 
-          url, 
-          response.statusCode, 
-          responseTime, 
-          logContext
+          method,
+          url,
+          response.statusCode,
+          responseTime,
+          logContext,
         );
-        
+
         // Log performance metrics for slow requests
         if (responseTime > 1000) {
-          this.appLogger.logPerformanceMetric('slow_request', responseTime, 'ms');
+          this.appLogger.logPerformanceMetric(
+            'slow_request',
+            responseTime,
+            'ms',
+          );
         }
       }),
       catchError((error) => {
         const responseTime = Date.now() - startTime;
         this.appLogger.logError(error, {
           ...logContext,
-          responseTime: `${responseTime}ms`
+          responseTime: `${responseTime}ms`,
         });
         throw error;
-      })
+      }),
     );
   }
 }

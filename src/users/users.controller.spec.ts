@@ -116,10 +116,20 @@ describe('UsersController', () => {
 
       mockUsersService.update.mockResolvedValue(updatedUser);
 
-      const result = await controller.update('1', updateUserDto, 'user1', UserRole.ADMIN);
+      const result = await controller.update(
+        '1',
+        updateUserDto,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual(updatedUser);
-      expect(service.update).toHaveBeenCalledWith('1', updateUserDto, 'user1', UserRole.ADMIN);
+      expect(service.update).toHaveBeenCalledWith(
+        '1',
+        updateUserDto,
+        'user1',
+        UserRole.ADMIN,
+      );
     });
   });
 
@@ -134,7 +144,11 @@ describe('UsersController', () => {
 
       await controller.changePassword('1', changePasswordDto, 'user1');
 
-      expect(service.changePassword).toHaveBeenCalledWith('1', changePasswordDto, 'user1');
+      expect(service.changePassword).toHaveBeenCalledWith(
+        '1',
+        changePasswordDto,
+        'user1',
+      );
     });
   });
 

@@ -90,10 +90,18 @@ describe('DocumentsController', () => {
 
       mockDocumentsService.create.mockResolvedValue(mockDocument);
 
-      const result = await controller.create(createDocumentDto, mockFile, 'user1');
+      const result = await controller.create(
+        createDocumentDto,
+        mockFile,
+        'user1',
+      );
 
       expect(result).toEqual(mockDocument);
-      expect(service.create).toHaveBeenCalledWith(createDocumentDto, mockFile, 'user1');
+      expect(service.create).toHaveBeenCalledWith(
+        createDocumentDto,
+        mockFile,
+        'user1',
+      );
     });
   });
 
@@ -112,10 +120,21 @@ describe('DocumentsController', () => {
 
       mockDocumentsService.findAll.mockResolvedValue(mockResult);
 
-      const result = await controller.findAll(paginationDto, 'user1', UserRole.VIEWER, 'search');
+      const result = await controller.findAll(
+        paginationDto,
+        'user1',
+        UserRole.VIEWER,
+        'search',
+      );
 
       expect(result).toEqual(mockResult);
-      expect(service.findAll).toHaveBeenCalledWith(paginationDto, 'user1', UserRole.VIEWER, 'search', undefined);
+      expect(service.findAll).toHaveBeenCalledWith(
+        paginationDto,
+        'user1',
+        UserRole.VIEWER,
+        'search',
+        undefined,
+      );
     });
   });
 
@@ -126,7 +145,11 @@ describe('DocumentsController', () => {
       const result = await controller.findOne('1', 'user1', UserRole.VIEWER);
 
       expect(result).toEqual(mockDocument);
-      expect(service.findOne).toHaveBeenCalledWith('1', 'user1', UserRole.VIEWER);
+      expect(service.findOne).toHaveBeenCalledWith(
+        '1',
+        'user1',
+        UserRole.VIEWER,
+      );
     });
   });
 
@@ -137,10 +160,20 @@ describe('DocumentsController', () => {
 
       mockDocumentsService.update.mockResolvedValue(updatedDocument);
 
-      const result = await controller.update('1', updateDocumentDto, 'user1', UserRole.EDITOR);
+      const result = await controller.update(
+        '1',
+        updateDocumentDto,
+        'user1',
+        UserRole.EDITOR,
+      );
 
       expect(result).toEqual(updatedDocument);
-      expect(service.update).toHaveBeenCalledWith('1', updateDocumentDto, 'user1', UserRole.EDITOR);
+      expect(service.update).toHaveBeenCalledWith(
+        '1',
+        updateDocumentDto,
+        'user1',
+        UserRole.EDITOR,
+      );
     });
   });
 

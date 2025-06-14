@@ -95,10 +95,20 @@ describe('IngestionController', () => {
 
       mockIngestionService.findAll.mockResolvedValue(mockResult);
 
-      const result = await controller.findAll(paginationDto, 'user1', UserRole.VIEWER);
+      const result = await controller.findAll(
+        paginationDto,
+        'user1',
+        UserRole.VIEWER,
+      );
 
       expect(result).toEqual(mockResult);
-      expect(service.findAll).toHaveBeenCalledWith(paginationDto, 'user1', UserRole.VIEWER, undefined, undefined);
+      expect(service.findAll).toHaveBeenCalledWith(
+        paginationDto,
+        'user1',
+        UserRole.VIEWER,
+        undefined,
+        undefined,
+      );
     });
   });
 
@@ -109,62 +119,122 @@ describe('IngestionController', () => {
       const result = await controller.findOne('1', 'user1', UserRole.VIEWER);
 
       expect(result).toEqual(mockIngestion);
-      expect(service.findOne).toHaveBeenCalledWith('1', 'user1', UserRole.VIEWER);
+      expect(service.findOne).toHaveBeenCalledWith(
+        '1',
+        'user1',
+        UserRole.VIEWER,
+      );
     });
   });
 
   describe('update', () => {
     it('should update an ingestion process', async () => {
-      const updateIngestionDto: UpdateIngestionDto = { parameters: { batchSize: 200 } };
-      const updatedIngestion = { ...mockIngestion, parameters: { batchSize: 200 } };
+      const updateIngestionDto: UpdateIngestionDto = {
+        parameters: { batchSize: 200 },
+      };
+      const updatedIngestion = {
+        ...mockIngestion,
+        parameters: { batchSize: 200 },
+      };
 
       mockIngestionService.update.mockResolvedValue(updatedIngestion);
 
-      const result = await controller.update('1', updateIngestionDto, 'user1', UserRole.EDITOR);
+      const result = await controller.update(
+        '1',
+        updateIngestionDto,
+        'user1',
+        UserRole.EDITOR,
+      );
 
       expect(result).toEqual(updatedIngestion);
-      expect(service.update).toHaveBeenCalledWith('1', updateIngestionDto, 'user1', UserRole.EDITOR);
+      expect(service.update).toHaveBeenCalledWith(
+        '1',
+        updateIngestionDto,
+        'user1',
+        UserRole.EDITOR,
+      );
     });
   });
 
   describe('startProcess', () => {
     it('should start an ingestion process', async () => {
-      const startedIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING };
+      const startedIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+      };
 
       mockIngestionService.startProcess.mockResolvedValue(startedIngestion);
 
-      const result = await controller.startProcess('1', 'user1', UserRole.ADMIN);
+      const result = await controller.startProcess(
+        '1',
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual(startedIngestion);
-      expect(service.startProcess).toHaveBeenCalledWith('1', 'user1', UserRole.ADMIN);
+      expect(service.startProcess).toHaveBeenCalledWith(
+        '1',
+        'user1',
+        UserRole.ADMIN,
+      );
     });
   });
 
   describe('completeProcess', () => {
     it('should complete an ingestion process', async () => {
       const result = { success: true, message: 'Completed' };
-      const completedIngestion = { ...mockIngestion, status: IngestionStatus.COMPLETED, result };
+      const completedIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.COMPLETED,
+        result,
+      };
 
-      mockIngestionService.completeProcess.mockResolvedValue(completedIngestion);
+      mockIngestionService.completeProcess.mockResolvedValue(
+        completedIngestion,
+      );
 
-      const response = await controller.completeProcess('1', result, 'user1', UserRole.ADMIN);
+      const response = await controller.completeProcess(
+        '1',
+        result,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(response).toEqual(completedIngestion);
-      expect(service.completeProcess).toHaveBeenCalledWith('1', result, 'user1', UserRole.ADMIN);
+      expect(service.completeProcess).toHaveBeenCalledWith(
+        '1',
+        result,
+        'user1',
+        UserRole.ADMIN,
+      );
     });
   });
 
   describe('failProcess', () => {
     it('should fail an ingestion process', async () => {
       const errorMessage = 'Process failed';
-      const failedIngestion = { ...mockIngestion, status: IngestionStatus.FAILED, errorMessage };
+      const failedIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.FAILED,
+        errorMessage,
+      };
 
       mockIngestionService.failProcess.mockResolvedValue(failedIngestion);
 
-      const result = await controller.failProcess('1', errorMessage, 'user1', UserRole.ADMIN);
+      const result = await controller.failProcess(
+        '1',
+        errorMessage,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual(failedIngestion);
-      expect(service.failProcess).toHaveBeenCalledWith('1', errorMessage, 'user1', UserRole.ADMIN);
+      expect(service.failProcess).toHaveBeenCalledWith(
+        '1',
+        errorMessage,
+        'user1',
+        UserRole.ADMIN,
+      );
     });
   });
 

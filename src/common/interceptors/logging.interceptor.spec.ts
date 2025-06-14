@@ -15,17 +15,17 @@ describe('LoggingInterceptor', () => {
     method: 'GET',
     url: '/api/test',
     headers: {
-      'user-agent': 'test-agent'
+      'user-agent': 'test-agent',
     },
     ip: '127.0.0.1',
     user: {
       sub: 'user123',
-      email: 'test@example.com'
-    }
+      email: 'test@example.com',
+    },
   };
 
   const mockResponse = {
-    statusCode: 200
+    statusCode: 200,
   };
 
   beforeEach(async () => {
@@ -54,7 +54,7 @@ describe('LoggingInterceptor', () => {
     mockHttpArgumentsHost = {
       getRequest: jest.fn().mockReturnValue(mockRequest),
       getResponse: jest.fn().mockReturnValue(mockResponse),
-      getNext: jest.fn()
+      getNext: jest.fn(),
     };
 
     mockExecutionContext = {
@@ -65,7 +65,7 @@ describe('LoggingInterceptor', () => {
       getArgByIndex: jest.fn(),
       switchToRpc: jest.fn(),
       switchToWs: jest.fn(),
-      getType: jest.fn()
+      getType: jest.fn(),
     } as any;
 
     mockCallHandler = {
@@ -73,7 +73,8 @@ describe('LoggingInterceptor', () => {
     } as any;
 
     // Mock Date.now to control timing
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, 'now')
       .mockReturnValueOnce(1000) // Start time
       .mockReturnValueOnce(1500); // End time (500ms response)
   });
@@ -95,7 +96,7 @@ describe('LoggingInterceptor', () => {
     result.subscribe({
       next: (data) => {
         expect(data).toBe('test response');
-        
+
         // Verify logging calls
         expect(appLogger.setContext).toHaveBeenCalledWith({
           requestId: expect.any(String),
@@ -103,7 +104,7 @@ describe('LoggingInterceptor', () => {
           url: '/api/test',
           userAgent: 'test-agent',
           ip: '127.0.0.1',
-          userId: 'user123'
+          userId: 'user123',
         });
 
         expect(appLogger.logRequest).toHaveBeenCalledWith(
@@ -113,8 +114,8 @@ describe('LoggingInterceptor', () => {
             requestId: expect.any(String),
             userAgent: 'test-agent',
             ip: '127.0.0.1',
-            userId: 'user123'
-          })
+            userId: 'user123',
+          }),
         );
 
         expect(appLogger.logResponse).toHaveBeenCalledWith(
@@ -128,8 +129,8 @@ describe('LoggingInterceptor', () => {
             url: '/api/test',
             userAgent: 'test-agent',
             ip: '127.0.0.1',
-            userId: 'user123'
-          })
+            userId: 'user123',
+          }),
         );
 
         // Performance metric is only logged for slow requests (>1000ms)
@@ -138,17 +139,19 @@ describe('LoggingInterceptor', () => {
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should handle request without user', (done) => {
     const requestWithoutUser = {
       ...mockRequest,
-      user: undefined
+      user: undefined,
     };
 
-    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(requestWithoutUser);
+    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(
+      requestWithoutUser,
+    );
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of('test response'));
 
     const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
@@ -161,7 +164,7 @@ describe('LoggingInterceptor', () => {
           url: '/api/test',
           userAgent: 'test-agent',
           ip: '127.0.0.1',
-          userId: undefined
+          userId: undefined,
         });
 
         expect(appLogger.logRequest).toHaveBeenCalledWith(
@@ -171,23 +174,25 @@ describe('LoggingInterceptor', () => {
             requestId: expect.any(String),
             userAgent: 'test-agent',
             ip: '127.0.0.1',
-            userId: undefined
-          })
+            userId: undefined,
+          }),
         );
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should handle request without user-agent header', (done) => {
     const requestWithoutUserAgent = {
       ...mockRequest,
-      headers: {}
+      headers: {},
     };
 
-    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(requestWithoutUserAgent);
+    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(
+      requestWithoutUserAgent,
+    );
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of('test response'));
 
     const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
@@ -200,19 +205,20 @@ describe('LoggingInterceptor', () => {
           url: '/api/test',
           userAgent: '',
           ip: '127.0.0.1',
-          userId: 'user123'
+          userId: 'user123',
         });
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should log slow requests with warning', (done) => {
     // Reset all mocks and setup new Date.now mock for slow request (>1000ms)
     jest.restoreAllMocks();
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, 'now')
       .mockReturnValueOnce(1000) // Start time
       .mockReturnValueOnce(2500); // End time (1500ms response)
 
@@ -225,12 +231,12 @@ describe('LoggingInterceptor', () => {
         expect(appLogger.logPerformanceMetric).toHaveBeenCalledWith(
           'slow_request',
           1500,
-          'ms'
+          'ms',
         );
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
@@ -247,13 +253,15 @@ describe('LoggingInterceptor', () => {
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should handle errors and log them', (done) => {
     const testError = new Error('Test error');
-    (mockCallHandler.handle as jest.Mock).mockReturnValue(throwError(() => testError));
+    (mockCallHandler.handle as jest.Mock).mockReturnValue(
+      throwError(() => testError),
+    );
 
     const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
@@ -268,12 +276,12 @@ describe('LoggingInterceptor', () => {
           expect.objectContaining({
             requestId: expect.any(String),
             method: 'GET',
-            url: '/api/test'
-          })
+            url: '/api/test',
+          }),
         );
 
         done();
-      }
+      },
     });
   });
 
@@ -281,10 +289,12 @@ describe('LoggingInterceptor', () => {
     const postRequest = {
       ...mockRequest,
       method: 'POST',
-      url: '/api/create'
+      url: '/api/create',
     };
 
-    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(postRequest);
+    (mockHttpArgumentsHost.getRequest as jest.Mock).mockReturnValue(
+      postRequest,
+    );
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of('created'));
 
     const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
@@ -294,7 +304,7 @@ describe('LoggingInterceptor', () => {
         expect(appLogger.logRequest).toHaveBeenCalledWith(
           'POST',
           '/api/create',
-          expect.any(Object)
+          expect.any(Object),
         );
 
         expect(appLogger.logResponse).toHaveBeenCalledWith(
@@ -302,7 +312,7 @@ describe('LoggingInterceptor', () => {
           '/api/create',
           200,
           500,
-          expect.any(Object)
+          expect.any(Object),
         );
 
         // Fast requests (<1000ms) should NOT trigger performance logging
@@ -310,16 +320,18 @@ describe('LoggingInterceptor', () => {
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should handle different response status codes', (done) => {
     const errorResponse = {
-      statusCode: 404
+      statusCode: 404,
     };
 
-    (mockHttpArgumentsHost.getResponse as jest.Mock).mockReturnValue(errorResponse);
+    (mockHttpArgumentsHost.getResponse as jest.Mock).mockReturnValue(
+      errorResponse,
+    );
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of('not found'));
 
     const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
@@ -337,8 +349,8 @@ describe('LoggingInterceptor', () => {
             url: '/api/test',
             userAgent: 'test-agent',
             ip: '127.0.0.1',
-            userId: 'user123'
-          })
+            userId: 'user123',
+          }),
         );
 
         // Fast requests (<1000ms) should NOT trigger performance logging
@@ -346,35 +358,43 @@ describe('LoggingInterceptor', () => {
 
         done();
       },
-      error: done
+      error: done,
     });
   });
 
   it('should generate unique request IDs for each request', (done) => {
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of('response1'));
 
-    const result1 = interceptor.intercept(mockExecutionContext, mockCallHandler);
+    const result1 = interceptor.intercept(
+      mockExecutionContext,
+      mockCallHandler,
+    );
 
     result1.subscribe({
       next: () => {
-        const firstRequestId = (appLogger.setContext as jest.Mock).mock.calls[0][0].requestId;
+        const firstRequestId = (appLogger.setContext as jest.Mock).mock
+          .calls[0][0].requestId;
 
         // Reset mocks for second request
         jest.clearAllMocks();
         (mockCallHandler.handle as jest.Mock).mockReturnValue(of('response2'));
 
-        const result2 = interceptor.intercept(mockExecutionContext, mockCallHandler);
+        const result2 = interceptor.intercept(
+          mockExecutionContext,
+          mockCallHandler,
+        );
 
         result2.subscribe({
           next: () => {
-            const secondRequestId = (appLogger.setContext as jest.Mock).mock.calls[0][0].requestId;
+            const secondRequestId = (appLogger.setContext as jest.Mock).mock
+              .calls[0][0].requestId;
             expect(firstRequestId).not.toBe(secondRequestId);
             done();
           },
-          error: done
+          error: done,
         });
       },
-      error: done
+      error: done,
     });
   });
 });

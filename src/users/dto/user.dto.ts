@@ -1,4 +1,12 @@
-import { IsEmail, IsString, IsEnum, IsOptional, MinLength, MaxLength, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsEnum,
+  IsOptional,
+  MinLength,
+  MaxLength,
+  Matches,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole, UserStatus } from '../../common/enums';
 
@@ -8,7 +16,8 @@ export class CreateUserDto {
   @MinLength(3)
   @MaxLength(50)
   @Matches(/^[a-zA-Z0-9_-]+$/, {
-    message: 'Username can only contain letters, numbers, underscores, and hyphens',
+    message:
+      'Username can only contain letters, numbers, underscores, and hyphens',
   })
   username: string;
 
@@ -21,7 +30,8 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message: 'Password must contain uppercase, lowercase, number and special character',
+    message:
+      'Password must contain uppercase, lowercase, number and special character',
   })
   password: string;
 
@@ -84,7 +94,8 @@ export class ChangePasswordDto {
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message: 'Password must contain uppercase, lowercase, number and special character',
+    message:
+      'Password must contain uppercase, lowercase, number and special character',
   })
   newPassword: string;
 }

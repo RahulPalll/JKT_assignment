@@ -36,7 +36,10 @@ export class UsersService {
 
     // Hash password
     const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltRounds,
+    );
 
     const user = this.userRepository.create({
       ...createUserDto,
@@ -47,8 +50,16 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async findAll(paginationDto: PaginationDto, search?: string): Promise<PaginationResult<User>> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC' } = paginationDto;
+  async findAll(
+    paginationDto: PaginationDto,
+    search?: string,
+  ): Promise<PaginationResult<User>> {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+    } = paginationDto;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.userRepository.createQueryBuilder('user');
@@ -100,7 +111,12 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, currentUserId: string, currentUserRole: UserRole): Promise<User> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    currentUserId: string,
+    currentUserRole: UserRole,
+  ): Promise<User> {
     const user = await this.findOne(id);
 
     // Check permissions
@@ -109,8 +125,13 @@ export class UsersService {
     }
 
     // Only admins can change roles and status
-    if ((updateUserDto.role || updateUserDto.status) && currentUserRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('Only admins can change user roles and status');
+    if (
+      (updateUserDto.role || updateUserDto.status) &&
+      currentUserRole !== UserRole.ADMIN
+    ) {
+      throw new ForbiddenException(
+        'Only admins can change user roles and status',
+      );
     }
 
     // Check if email is being changed and already exists
@@ -128,7 +149,11 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async changePassword(id: string, changePasswordDto: ChangePasswordDto, currentUserId: string): Promise<void> {
+  async changePassword(
+    id: string,
+    changePasswordDto: ChangePasswordDto,
+    currentUserId: string,
+  ): Promise<void> {
     if (currentUserId !== id) {
       throw new ForbiddenException('You can only change your own password');
     }
@@ -143,14 +168,20 @@ export class UsersService {
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+    const isCurrentPasswordValid = await bcrypt.compare(
+      changePasswordDto.currentPassword,
+      user.password,
+    );
     if (!isCurrentPasswordValid) {
       throw new BadRequestException('Current password is incorrect');
     }
 
     // Hash new password
     const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      saltRounds,
+    );
 
     await this.userRepository.update(id, { password: hashedPassword });
   }

@@ -71,7 +71,10 @@ export class UserSeeder {
           { weight: 15, value: UserStatus.INACTIVE },
           { weight: 5, value: UserStatus.SUSPENDED },
         ]),
-        lastLoginAt: faker.helpers.maybe(() => faker.date.recent({ days: 30 }), { probability: 0.7 }),
+        lastLoginAt: faker.helpers.maybe(
+          () => faker.date.recent({ days: 30 }),
+          { probability: 0.7 },
+        ),
       });
       users.push(user);
 
@@ -79,10 +82,14 @@ export class UserSeeder {
       if (users.length === batchSize || i === totalUsers - 1) {
         await userRepository.save(users);
         users.length = 0;
-        console.log(`Created ${Math.min((Math.floor(i / batchSize) + 1) * batchSize, totalUsers)} users...`);
+        console.log(
+          `Created ${Math.min((Math.floor(i / batchSize) + 1) * batchSize, totalUsers)} users...`,
+        );
       }
     }
 
-    console.log(`Total users created: ${totalUsers + 3} (including admin, editor, viewer)`);
+    console.log(
+      `Total users created: ${totalUsers + 3} (including admin, editor, viewer)`,
+    );
   }
 }
