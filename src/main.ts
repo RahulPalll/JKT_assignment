@@ -8,7 +8,10 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || ['http://localhost:3000', 'http://localhost:4200'],
+    origin: process.env.CORS_ORIGIN || [
+      'http://localhost:3000',
+      'http://localhost:4200',
+    ],
     credentials: true,
   });
 
@@ -27,7 +30,9 @@ async function bootstrap() {
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('User & Document Management API')
-    .setDescription('A comprehensive NestJS backend for user and document management with role-based authentication')
+    .setDescription(
+      'A comprehensive NestJS backend for user and document management with role-based authentication',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('Authentication', 'User authentication and authorization')
@@ -45,7 +50,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  
+
   console.log(`🚀 Application is running on: http://localhost:${port}`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
 }

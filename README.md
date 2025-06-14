@@ -119,26 +119,6 @@ npm run type-check        # TypeScript validation
 | **[🚀 DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** | Production deployment instructions |
 | **[📊 Swagger UI](http://localhost:3000/api/docs)** | Interactive API documentation |
 
-## 🌿 Development Workflow
-
-This project demonstrates professional Git workflow with feature-based branching:
-
-```
-main (production)
-├── develop (integration)
-├── feature/authentication-jwt
-├── feature/document-management  
-├── feature/data-ingestion
-├── feature/testing-coverage
-└── release/v1.0.0
-```
-
-### Branch Highlights
-- **`feature/01-project-setup`** - Architecture foundation
-- **`feature/03-authentication-jwt`** - Security implementation
-- **`feature/05-document-management`** - File handling system
-- **`feature/10-comprehensive-testing`** - Test strategy
-- **`feature/15-dockerization`** - Deployment preparation
 
 ## 🔐 Security Features
 
@@ -202,10 +182,6 @@ This project demonstrates mastery of:
 - Protection against common vulnerabilities
 
 ---
-
-## 📞 Support
-
-For questions about implementation details, deployment, or architecture decisions, please refer to the comprehensive documentation or create an issue in this repository.
 
 **Author**: Rahul Pal  
 **Assignment**: JK Tech Backend Developer Assessment  

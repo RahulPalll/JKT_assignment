@@ -17,7 +17,15 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { createReadStream } from 'fs';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiQuery, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiQuery,
+  ApiBody,
+} from '@nestjs/swagger';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto, UpdateDocumentDto } from './dto';
 import { PaginationDto } from '../common/dto';
@@ -84,7 +92,12 @@ export class DocumentsController {
 
   @ApiOperation({ summary: 'Get all documents with pagination and filtering' })
   @ApiQuery({ name: 'search', required: false, description: 'Search term' })
-  @ApiQuery({ name: 'status', required: false, enum: DocumentStatus, description: 'Filter by status' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: DocumentStatus,
+    description: 'Filter by status',
+  })
   @ApiResponse({ status: 200, description: 'Documents retrieved successfully' })
   @Get()
   findAll(
@@ -94,11 +107,20 @@ export class DocumentsController {
     @Query('search') search?: string,
     @Query('status') status?: DocumentStatus,
   ) {
-    return this.documentsService.findAll(paginationDto, userId, userRole, search, status);
+    return this.documentsService.findAll(
+      paginationDto,
+      userId,
+      userRole,
+      search,
+      status,
+    );
   }
 
   @ApiOperation({ summary: 'Get document statistics' })
-  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Statistics retrieved successfully',
+  })
   @Get('stats')
   getStats(
     @GetUser('sub') userId: string,
@@ -129,10 +151,14 @@ export class DocumentsController {
     @GetUser('role') userRole: UserRole,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const fileInfo = await this.documentsService.downloadFile(id, userId, userRole);
-    
+    const fileInfo = await this.documentsService.downloadFile(
+      id,
+      userId,
+      userRole,
+    );
+
     const file = createReadStream(fileInfo.path);
-    
+
     res.set({
       'Content-Type': fileInfo.mimetype,
       'Content-Disposition': `attachment; filename="${fileInfo.filename}"`,
@@ -152,7 +178,12 @@ export class DocumentsController {
     @GetUser('sub') userId: string,
     @GetUser('role') userRole: UserRole,
   ) {
-    return this.documentsService.update(id, updateDocumentDto, userId, userRole);
+    return this.documentsService.update(
+      id,
+      updateDocumentDto,
+      userId,
+      userRole,
+    );
   }
 
   @ApiOperation({ summary: 'Delete document' })

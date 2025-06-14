@@ -10,7 +10,13 @@ import {
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto';
 import { PaginationDto } from '../common/dto';
@@ -49,7 +55,10 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Get user statistics (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Statistics retrieved successfully',
+  })
   @Roles(UserRole.ADMIN)
   @UseGuards(RolesGuard)
   @Get('stats')
@@ -76,7 +85,12 @@ export class UsersController {
     @GetUser('sub') currentUserId: string,
     @GetUser('role') currentUserRole: UserRole,
   ) {
-    return this.usersService.update(id, updateUserDto, currentUserId, currentUserRole);
+    return this.usersService.update(
+      id,
+      updateUserDto,
+      currentUserId,
+      currentUserRole,
+    );
   }
 
   @ApiOperation({ summary: 'Change user password' })
@@ -88,7 +102,11 @@ export class UsersController {
     @Body() changePasswordDto: ChangePasswordDto,
     @GetUser('sub') currentUserId: string,
   ) {
-    return this.usersService.changePassword(id, changePasswordDto, currentUserId);
+    return this.usersService.changePassword(
+      id,
+      changePasswordDto,
+      currentUserId,
+    );
   }
 
   @ApiOperation({ summary: 'Delete user (Admin only)' })

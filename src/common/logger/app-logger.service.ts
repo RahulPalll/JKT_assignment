@@ -88,13 +88,19 @@ export class AppLogger implements LoggerService {
     this.logWithContext(`${method} ${url}`, { method, url, ...context });
   }
 
-  logResponse(method: string, url: string, statusCode: number, responseTime: number, context?: LogContext) {
-    this.logWithContext(`${method} ${url} ${statusCode} ${responseTime}ms`, { 
-      method, 
-      url, 
-      statusCode: statusCode.toString(), 
+  logResponse(
+    method: string,
+    url: string,
+    statusCode: number,
+    responseTime: number,
+    context?: LogContext,
+  ) {
+    this.logWithContext(`${method} ${url} ${statusCode} ${responseTime}ms`, {
+      method,
+      url,
+      statusCode: statusCode.toString(),
       responseTime: `${responseTime}ms`,
-      ...context 
+      ...context,
     });
   }
 
@@ -102,7 +108,7 @@ export class AppLogger implements LoggerService {
     this.errorWithContext(
       `${error.name}: ${error.message}`,
       error.stack,
-      context
+      context,
     );
   }
 
@@ -111,7 +117,7 @@ export class AppLogger implements LoggerService {
     this.logWithContext(`User action: ${action}`, {
       userId,
       action,
-      details: details ? JSON.stringify(details) : undefined
+      details: details ? JSON.stringify(details) : undefined,
     });
   }
 
@@ -120,7 +126,7 @@ export class AppLogger implements LoggerService {
       userId,
       ip,
       event,
-      details: details ? JSON.stringify(details) : undefined
+      details: details ? JSON.stringify(details) : undefined,
     });
   }
 
@@ -128,7 +134,7 @@ export class AppLogger implements LoggerService {
     this.logWithContext(`Performance: ${metric} = ${value}${unit}`, {
       metric,
       value: value.toString(),
-      unit
+      unit,
     });
   }
 }

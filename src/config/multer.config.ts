@@ -26,7 +26,9 @@ export const multerConfig = {
       callback(null, true);
     } else {
       callback(
-        new BadRequestException('Only PDF, DOC, DOCX, TXT, CSV, XLS, and XLSX files are allowed'),
+        new BadRequestException(
+          'Only PDF, DOC, DOCX, TXT, CSV, XLS, and XLSX files are allowed',
+        ),
         false,
       );
     }

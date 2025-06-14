@@ -38,10 +38,14 @@ export class MetricsService {
   private metrics: Metric[] = [];
 
   // Counter methods
-  incrementCounter(name: string, labels?: Record<string, string>, value: number = 1) {
+  incrementCounter(
+    name: string,
+    labels?: Record<string, string>,
+    value: number = 1,
+  ) {
     const key = this.getKey(name, labels);
     const existing = this.counters.get(key);
-    
+
     if (existing) {
       existing.value += value;
     } else {
@@ -57,7 +61,11 @@ export class MetricsService {
   }
 
   // Histogram methods
-  recordHistogram(name: string, value: number, labels?: Record<string, string>) {
+  recordHistogram(
+    name: string,
+    value: number,
+    labels?: Record<string, string>,
+  ) {
     const key = this.getKey(name, labels);
     let histogram = this.histograms.get(key);
 
@@ -66,7 +74,7 @@ export class MetricsService {
         count: 0,
         sum: 0,
         buckets: new Map(),
-        labels
+        labels,
       };
       this.histograms.set(key, histogram);
     }
@@ -86,7 +94,10 @@ export class MetricsService {
     this.recordMetric(name, value, labels);
   }
 
-  getHistogram(name: string, labels?: Record<string, string>): Histogram | undefined {
+  getHistogram(
+    name: string,
+    labels?: Record<string, string>,
+  ): Histogram | undefined {
     const key = this.getKey(name, labels);
     return this.histograms.get(key);
   }
@@ -98,13 +109,21 @@ export class MetricsService {
     this.recordMetric(name, value, labels);
   }
 
-  incrementGauge(name: string, value: number = 1, labels?: Record<string, string>) {
+  incrementGauge(
+    name: string,
+    value: number = 1,
+    labels?: Record<string, string>,
+  ) {
     const key = this.getKey(name, labels);
     const current = this.gauges.get(key) || 0;
     this.setGauge(name, current + value, labels);
   }
 
-  decrementGauge(name: string, value: number = 1, labels?: Record<string, string>) {
+  decrementGauge(
+    name: string,
+    value: number = 1,
+    labels?: Record<string, string>,
+  ) {
     const key = this.getKey(name, labels);
     const current = this.gauges.get(key) || 0;
     this.setGauge(name, current - value, labels);
@@ -116,11 +135,20 @@ export class MetricsService {
   }
 
   // Business metrics
-  recordApiCall(endpoint: string, method: string, statusCode: number, duration: number) {
+  recordApiCall(
+    endpoint: string,
+    method: string,
+    statusCode: number,
+    duration: number,
+  ) {
     const labels = { endpoint, method, status_code: statusCode.toString() };
-    
+
     this.incrementCounter('api_requests_total', labels);
-    this.recordHistogram('api_request_duration_seconds', duration / 1000, labels);
+    this.recordHistogram(
+      'api_request_duration_seconds',
+      duration / 1000,
+      labels,
+    );
 
     if (statusCode >= 400) {
       this.incrementCounter('api_errors_total', labels);
@@ -134,13 +162,17 @@ export class MetricsService {
   recordDatabaseOperation(operation: string, table: string, duration: number) {
     const labels = { operation, table };
     this.incrementCounter('database_operations_total', labels);
-    this.recordHistogram('database_operation_duration_seconds', duration / 1000, labels);
+    this.recordHistogram(
+      'database_operation_duration_seconds',
+      duration / 1000,
+      labels,
+    );
   }
 
   recordFileOperation(operation: string, fileType: string, size?: number) {
     const labels = { operation, file_type: fileType };
     this.incrementCounter('file_operations_total', labels);
-    
+
     if (size) {
       this.recordHistogram('file_size_bytes', size, labels);
     }
@@ -167,8 +199,16 @@ export class MetricsService {
   recordCacheHitRate(service: string, hits: number, total: number) {
     const hitRate = total > 0 ? hits / total : 0;
     this.setGauge('cache_hit_rate', hitRate, { service });
-    this.incrementCounter('cache_operations_total', { service, type: 'hit' }, hits);
-    this.incrementCounter('cache_operations_total', { service, type: 'miss' }, total - hits);
+    this.incrementCounter(
+      'cache_operations_total',
+      { service, type: 'hit' },
+      hits,
+    );
+    this.incrementCounter(
+      'cache_operations_total',
+      { service, type: 'miss' },
+      total - hits,
+    );
   }
 
   // Export methods
@@ -191,14 +231,17 @@ export class MetricsService {
     for (const [key, histogram] of this.histograms) {
       const [name] = key.split('|');
       const labels = this.formatLabels(histogram.labels);
-      
+
       output += `# TYPE ${name} histogram\n`;
       output += `${name}_count${labels} ${histogram.count}\n`;
       output += `${name}_sum${labels} ${histogram.sum}\n`;
-      
+
       for (const [bucket, count] of histogram.buckets) {
         const bucketLabel = bucket === Infinity ? '+Inf' : bucket.toString();
-        const bucketLabels = this.formatLabels({ ...histogram.labels, le: bucketLabel });
+        const bucketLabels = this.formatLabels({
+          ...histogram.labels,
+          le: bucketLabel,
+        });
         output += `${name}_bucket${bucketLabels} ${count}\n`;
       }
     }
@@ -224,26 +267,30 @@ export class MetricsService {
             count: hist.count,
             sum: hist.sum,
             average: hist.count > 0 ? hist.sum / hist.count : 0,
-            buckets: Object.fromEntries(hist.buckets)
-          }
-        ])
+            buckets: Object.fromEntries(hist.buckets),
+          },
+        ]),
       ),
       gauges: Object.fromEntries(this.gauges),
       system: {
         uptime: process.uptime(),
         memory: process.memoryUsage(),
-        cpu: process.cpuUsage()
-      }
+        cpu: process.cpuUsage(),
+      },
     };
   }
 
   // Utility methods
-  private recordMetric(name: string, value: number, labels?: Record<string, string>) {
+  private recordMetric(
+    name: string,
+    value: number,
+    labels?: Record<string, string>,
+  ) {
     this.metrics.push({
       name,
       value,
       timestamp: new Date(),
-      labels
+      labels,
     });
 
     // Keep only last 1000 metrics to prevent memory issues
@@ -256,12 +303,12 @@ export class MetricsService {
     if (!labels || Object.keys(labels).length === 0) {
       return name;
     }
-    
+
     const labelStr = Object.entries(labels)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, value]) => `${key}="${value}"`)
       .join(',');
-    
+
     return `${name}|${labelStr}`;
   }
 
@@ -280,14 +327,14 @@ export class MetricsService {
   private parseLabels(labelStr: string): Record<string, string> {
     const labels: Record<string, string> = {};
     const pairs = labelStr.split(',');
-    
+
     for (const pair of pairs) {
       const [key, value] = pair.split('=');
       if (key && value) {
         labels[key] = value.replace(/"/g, '');
       }
     }
-    
+
     return labels;
   }
 

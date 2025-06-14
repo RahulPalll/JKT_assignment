@@ -39,7 +39,12 @@ describe('AuthController', () => {
       const expectedResult = {
         access_token: 'token',
         refresh_token: 'refresh',
-        user: { id: '1', username: 'testuser', email: 'test@example.com', role: UserRole.VIEWER },
+        user: {
+          id: '1',
+          username: 'testuser',
+          email: 'test@example.com',
+          role: UserRole.VIEWER,
+        },
       };
 
       mockAuthService.login.mockResolvedValue(expectedResult);
@@ -63,7 +68,12 @@ describe('AuthController', () => {
       const expectedResult = {
         access_token: 'token',
         refresh_token: 'refresh',
-        user: { id: '1', username: 'newuser', email: 'new@example.com', role: UserRole.VIEWER },
+        user: {
+          id: '1',
+          username: 'newuser',
+          email: 'new@example.com',
+          role: UserRole.VIEWER,
+        },
       };
 
       mockAuthService.register.mockResolvedValue(expectedResult);

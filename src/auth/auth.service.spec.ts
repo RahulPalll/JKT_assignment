@@ -105,7 +105,9 @@ describe('AuthService', () => {
         ingestionProcesses: [],
         fullName: 'Test User',
       });
-      expect(mockRepository.update).toHaveBeenCalledWith('1', { lastLoginAt: expect.any(Date) });
+      expect(mockRepository.update).toHaveBeenCalledWith('1', {
+        lastLoginAt: expect.any(Date),
+      });
     });
 
     it('should return null when user is not found', async () => {
@@ -146,7 +148,9 @@ describe('AuthService', () => {
       };
 
       jest.spyOn(service, 'validateUser').mockResolvedValue(validatedUser);
-      mockJwtService.sign.mockReturnValueOnce('access_token').mockReturnValueOnce('refresh_token');
+      mockJwtService.sign
+        .mockReturnValueOnce('access_token')
+        .mockReturnValueOnce('refresh_token');
       mockConfigService.get.mockReturnValue('secret');
 
       const result = await service.login(loginDto);
@@ -159,11 +163,16 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException when credentials are invalid', async () => {
-      const loginDto = { usernameOrEmail: 'testuser', password: 'wrongpassword' };
+      const loginDto = {
+        usernameOrEmail: 'testuser',
+        password: 'wrongpassword',
+      };
 
       jest.spyOn(service, 'validateUser').mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -180,7 +189,9 @@ describe('AuthService', () => {
       mockRepository.findOne.mockResolvedValue(null); // No existing user
       mockRepository.create.mockReturnValue(mockUser);
       mockRepository.save.mockResolvedValue(mockUser);
-      mockJwtService.sign.mockReturnValueOnce('access_token').mockReturnValueOnce('refresh_token');
+      mockJwtService.sign
+        .mockReturnValueOnce('access_token')
+        .mockReturnValueOnce('refresh_token');
       mockConfigService.get.mockReturnValue('secret');
 
       jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedpassword' as never);
@@ -202,7 +213,9 @@ describe('AuthService', () => {
     it('should throw ConflictException when user already exists', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -228,7 +241,9 @@ describe('AuthService', () => {
         throw new Error('Invalid token');
       });
 
-      await expect(service.refreshToken(refreshToken)).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException when user is not found', async () => {
@@ -239,7 +254,9 @@ describe('AuthService', () => {
       mockRepository.findOne.mockResolvedValue(null);
       mockConfigService.get.mockReturnValue('secret');
 
-      await expect(service.refreshToken(refreshToken)).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

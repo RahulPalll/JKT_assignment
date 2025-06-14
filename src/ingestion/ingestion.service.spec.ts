@@ -3,8 +3,17 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IngestionService } from './ingestion.service';
 import { IngestionProcess, User } from '../database/entities';
-import { IngestionStatus, IngestionType, UserRole, UserStatus } from '../common/enums';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  IngestionStatus,
+  IngestionType,
+  UserRole,
+  UserStatus,
+} from '../common/enums';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PaginationDto } from '../common/dto';
 
 describe('IngestionService', () => {
@@ -95,7 +104,9 @@ describe('IngestionService', () => {
     }).compile();
 
     service = module.get<IngestionService>(IngestionService);
-    ingestionRepository = module.get<Repository<IngestionProcess>>(getRepositoryToken(IngestionProcess));
+    ingestionRepository = module.get<Repository<IngestionProcess>>(
+      getRepositoryToken(IngestionProcess),
+    );
 
     mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
   });
@@ -136,9 +147,16 @@ describe('IngestionService', () => {
       const mockIngestions = [mockIngestion];
       const total = 1;
 
-      mockQueryBuilder.getManyAndCount.mockResolvedValue([mockIngestions, total]);
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([
+        mockIngestions,
+        total,
+      ]);
 
-      const result = await service.findAll(paginationDto, 'user1', UserRole.ADMIN);
+      const result = await service.findAll(
+        paginationDto,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual({
         data: mockIngestions,
@@ -159,7 +177,10 @@ describe('IngestionService', () => {
 
       await service.findAll(paginationDto, 'user1', UserRole.VIEWER);
 
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith('ingestion.initiatedById = :userId', { userId: 'user1' });
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'ingestion.initiatedById = :userId',
+        { userId: 'user1' },
+      );
     });
   });
 
@@ -175,15 +196,23 @@ describe('IngestionService', () => {
     it('should throw NotFoundException when ingestion process not found', async () => {
       mockQueryBuilder.getOne.mockResolvedValue(null);
 
-      await expect(service.findOne('1', 'user1', UserRole.ADMIN)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne('1', 'user1', UserRole.ADMIN),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('startProcess', () => {
     it('should start ingestion process successfully', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockIngestion);
-      jest.spyOn(service as any, 'processIngestion').mockImplementation(() => {});
-      const updatedIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING, startedAt: new Date() };
+      jest
+        .spyOn(service as any, 'processIngestion')
+        .mockImplementation(() => {});
+      const updatedIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+        startedAt: new Date(),
+      };
       mockRepository.save.mockResolvedValue(updatedIngestion);
 
       const result = await service.startProcess('1', 'user1', UserRole.ADMIN);
@@ -193,23 +222,37 @@ describe('IngestionService', () => {
     });
 
     it('should throw BadRequestException when process is not pending', async () => {
-      const processingIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING };
+      const processingIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValue(processingIngestion);
 
-      await expect(service.startProcess('1', 'user1', UserRole.ADMIN)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.startProcess('1', 'user1', UserRole.ADMIN),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw ForbiddenException when user is not owner and not admin', async () => {
-      const otherUserIngestion = { ...mockIngestion, initiatedById: 'user1', status: IngestionStatus.PENDING };
+      const otherUserIngestion = {
+        ...mockIngestion,
+        initiatedById: 'user1',
+        status: IngestionStatus.PENDING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValue(otherUserIngestion);
 
-      await expect(service.startProcess('1', 'user2', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.startProcess('1', 'user2', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
   describe('completeProcess', () => {
     it('should complete ingestion process successfully', async () => {
-      const processingIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING };
+      const processingIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValueOnce(processingIngestion);
       const result = { success: true, message: 'Completed' };
       const completedIngestion = {
@@ -220,7 +263,12 @@ describe('IngestionService', () => {
       };
       mockRepository.save.mockResolvedValue(completedIngestion);
 
-      const response = await service.completeProcess('1', result, 'user1', UserRole.ADMIN);
+      const response = await service.completeProcess(
+        '1',
+        result,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(response.status).toEqual(IngestionStatus.COMPLETED);
       expect(response.result).toEqual(result);
@@ -228,16 +276,24 @@ describe('IngestionService', () => {
 
     it('should throw BadRequestException when process is not processing', async () => {
       // Create a fresh mock with PENDING status
-      const pendingIngestion = { ...mockIngestion, status: IngestionStatus.PENDING };
+      const pendingIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PENDING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValueOnce(pendingIngestion);
 
-      await expect(service.completeProcess('1', {}, 'user1', UserRole.ADMIN)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.completeProcess('1', {}, 'user1', UserRole.ADMIN),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('failProcess', () => {
     it('should fail ingestion process successfully', async () => {
-      const processingIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING };
+      const processingIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValue(processingIngestion);
       const errorMessage = 'Process failed';
       const failedIngestion = {
@@ -248,7 +304,12 @@ describe('IngestionService', () => {
       };
       mockRepository.save.mockResolvedValue(failedIngestion);
 
-      const result = await service.failProcess('1', errorMessage, 'user1', UserRole.ADMIN);
+      const result = await service.failProcess(
+        '1',
+        errorMessage,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result.status).toEqual(IngestionStatus.FAILED);
       expect(result.errorMessage).toEqual(errorMessage);
@@ -257,7 +318,10 @@ describe('IngestionService', () => {
 
   describe('remove', () => {
     it('should remove ingestion process successfully when user is owner', async () => {
-      const completedIngestion = { ...mockIngestion, status: IngestionStatus.COMPLETED };
+      const completedIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.COMPLETED,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValue(completedIngestion);
       mockRepository.remove.mockResolvedValue(completedIngestion);
 
@@ -269,14 +333,21 @@ describe('IngestionService', () => {
     it('should throw ForbiddenException when user is not owner and not admin', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockIngestion);
 
-      await expect(service.remove('1', 'user2', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.remove('1', 'user2', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw BadRequestException when trying to delete running process', async () => {
-      const processingIngestion = { ...mockIngestion, status: IngestionStatus.PROCESSING };
+      const processingIngestion = {
+        ...mockIngestion,
+        status: IngestionStatus.PROCESSING,
+      };
       jest.spyOn(service, 'findOne').mockResolvedValue(processingIngestion);
 
-      await expect(service.remove('1', 'user1', UserRole.ADMIN)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.remove('1', 'user1', UserRole.ADMIN),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -284,9 +355,9 @@ describe('IngestionService', () => {
     it('should return ingestion statistics', async () => {
       mockQueryBuilder.getCount
         .mockResolvedValueOnce(100) // total
-        .mockResolvedValueOnce(20)  // pending
-        .mockResolvedValueOnce(10)  // processing
-        .mockResolvedValueOnce(60)  // completed
+        .mockResolvedValueOnce(20) // pending
+        .mockResolvedValueOnce(10) // processing
+        .mockResolvedValueOnce(60) // completed
         .mockResolvedValueOnce(10); // failed
 
       mockQueryBuilder.getRawMany.mockResolvedValue([

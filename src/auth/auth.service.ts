@@ -25,10 +25,7 @@ export class AuthService {
 
   async validateUser(usernameOrEmail: string, password: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: [
-        { username: usernameOrEmail },
-        { email: usernameOrEmail },
-      ],
+      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
     });
 
     if (!user || user.status !== UserStatus.ACTIVE) {
@@ -48,8 +45,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<AuthResult> {
-    const user = await this.validateUser(loginDto.usernameOrEmail, loginDto.password);
-    
+    const user = await this.validateUser(
+      loginDto.usernameOrEmail,
+      loginDto.password,
+    );
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -81,10 +81,7 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<AuthResult> {
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
-      where: [
-        { username: registerDto.username },
-        { email: registerDto.email },
-      ],
+      where: [{ username: registerDto.username }, { email: registerDto.email }],
     });
 
     if (existingUser) {

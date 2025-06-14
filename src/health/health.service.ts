@@ -22,7 +22,7 @@ export class HealthService {
 
   async getDetailedHealthStatus() {
     const startTime = Date.now();
-    
+
     const [databaseStatus, memoryUsage] = await Promise.allSettled([
       this.checkDatabase(),
       this.getMemoryUsage(),
@@ -58,21 +58,24 @@ export class HealthService {
       responseTime,
       checks: {
         database: databaseResult,
-        memory: memoryUsage.status === 'fulfilled' ? memoryUsage.value : {
-          status: 'error',
-          message: 'Memory check failed',
-        },
+        memory:
+          memoryUsage.status === 'fulfilled'
+            ? memoryUsage.value
+            : {
+                status: 'error',
+                message: 'Memory check failed',
+              },
       },
     };
   }
 
   async getReadinessStatus() {
     const databaseStatus = await this.checkDatabase();
-    
+
     if (databaseStatus.status === 'unhealthy') {
       throw new Error('Application is not ready');
     }
-    
+
     return {
       status: 'ready',
       timestamp: new Date().toISOString(),
@@ -92,7 +95,7 @@ export class HealthService {
       const startTime = Date.now();
       await this.dataSource.query('SELECT 1');
       const responseTime = Date.now() - startTime;
-      
+
       return {
         status: 'healthy',
         responseTime,
@@ -110,7 +113,7 @@ export class HealthService {
     const usage = process.memoryUsage();
     const totalMemory = require('os').totalmem();
     const freeMemory = require('os').freemem();
-    
+
     return {
       status: 'healthy',
       heap: {

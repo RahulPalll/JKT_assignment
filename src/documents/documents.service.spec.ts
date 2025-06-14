@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { Document, User } from '../database/entities';
 import { DocumentStatus, UserRole, UserStatus } from '../common/enums';
@@ -105,7 +109,9 @@ describe('DocumentsService', () => {
     }).compile();
 
     service = module.get<DocumentsService>(DocumentsService);
-    documentRepository = module.get<Repository<Document>>(getRepositoryToken(Document));
+    documentRepository = module.get<Repository<Document>>(
+      getRepositoryToken(Document),
+    );
 
     mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
   });
@@ -141,23 +147,33 @@ describe('DocumentsService', () => {
     });
 
     it('should throw BadRequestException when no file is provided', async () => {
-      await expect(service.create(createDocumentDto, undefined as any, 'user1')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.create(createDocumentDto, undefined as any, 'user1'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for unsupported file type', async () => {
       const invalidFile = { ...mockFile, mimetype: 'image/jpeg' };
 
-      await expect(service.create(createDocumentDto, invalidFile as Express.Multer.File, 'user1')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.create(
+          createDocumentDto,
+          invalidFile as Express.Multer.File,
+          'user1',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for file too large', async () => {
       const largeFile = { ...mockFile, size: 11 * 1024 * 1024 }; // 11MB
 
-      await expect(service.create(createDocumentDto, largeFile as Express.Multer.File, 'user1')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.create(
+          createDocumentDto,
+          largeFile as Express.Multer.File,
+          'user1',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -168,13 +184,20 @@ describe('DocumentsService', () => {
       paginationDto.limit = 10;
       paginationDto.sortBy = 'createdAt';
       paginationDto.sortOrder = 'DESC' as const;
-      
+
       const mockDocuments = [mockDocument];
       const total = 1;
 
-      mockQueryBuilder.getManyAndCount.mockResolvedValue([mockDocuments, total]);
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([
+        mockDocuments,
+        total,
+      ]);
 
-      const result = await service.findAll(paginationDto, 'user1', UserRole.ADMIN);
+      const result = await service.findAll(
+        paginationDto,
+        'user1',
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual({
         data: mockDocuments,
@@ -189,7 +212,7 @@ describe('DocumentsService', () => {
       const paginationDto = new PaginationDto();
       paginationDto.page = 1;
       paginationDto.limit = 10;
-      
+
       const mockDocuments = [mockDocument];
 
       mockQueryBuilder.getManyAndCount.mockResolvedValue([mockDocuments, 1]);
@@ -215,7 +238,9 @@ describe('DocumentsService', () => {
     it('should throw NotFoundException when document not found', async () => {
       mockQueryBuilder.getOne.mockResolvedValue(null);
 
-      await expect(service.findOne('1', 'user1', UserRole.ADMIN)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne('1', 'user1', UserRole.ADMIN),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -224,10 +249,19 @@ describe('DocumentsService', () => {
 
     it('should update document successfully when user is owner', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockDocument);
-      const updatedDocument = { ...mockDocument, ...updateDocumentDto, updatedById: 'user1' };
+      const updatedDocument = {
+        ...mockDocument,
+        ...updateDocumentDto,
+        updatedById: 'user1',
+      };
       mockRepository.save.mockResolvedValue(updatedDocument);
 
-      const result = await service.update('1', updateDocumentDto, 'user1', UserRole.VIEWER);
+      const result = await service.update(
+        '1',
+        updateDocumentDto,
+        'user1',
+        UserRole.VIEWER,
+      );
 
       expect(result.title).toEqual(updateDocumentDto.title);
       expect(result.updatedById).toEqual('user1');
@@ -236,16 +270,18 @@ describe('DocumentsService', () => {
     it('should throw ForbiddenException when user is not owner and not admin', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockDocument);
 
-      await expect(service.update('1', updateDocumentDto, 'user2', UserRole.VIEWER)).rejects.toThrow(
-        ForbiddenException,
-      );
+      await expect(
+        service.update('1', updateDocumentDto, 'user2', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw ForbiddenException when viewer tries to publish', async () => {
       const publishUpdate = { status: DocumentStatus.PUBLISHED };
       jest.spyOn(service, 'findOne').mockResolvedValue(mockDocument);
 
-      await expect(service.update('1', publishUpdate, 'user1', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.update('1', publishUpdate, 'user1', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -265,7 +301,9 @@ describe('DocumentsService', () => {
     it('should throw ForbiddenException when user is not owner and not admin', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockDocument);
 
-      await expect(service.remove('1', 'user2', UserRole.VIEWER)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.remove('1', 'user2', UserRole.VIEWER),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -287,7 +325,9 @@ describe('DocumentsService', () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(mockDocument);
       mockFs.existsSync.mockReturnValue(false);
 
-      await expect(service.downloadFile('1', 'user1', UserRole.VIEWER)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.downloadFile('1', 'user1', UserRole.VIEWER),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -295,8 +335,8 @@ describe('DocumentsService', () => {
     it('should return document statistics', async () => {
       mockQueryBuilder.getCount
         .mockResolvedValueOnce(100) // total
-        .mockResolvedValueOnce(30)  // draft
-        .mockResolvedValueOnce(60)  // published
+        .mockResolvedValueOnce(30) // draft
+        .mockResolvedValueOnce(60) // published
         .mockResolvedValueOnce(10); // archived
 
       mockQueryBuilder.getRawMany.mockResolvedValue([

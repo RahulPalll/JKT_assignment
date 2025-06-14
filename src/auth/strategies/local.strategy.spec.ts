@@ -48,13 +48,18 @@ describe('LocalStrategy', () => {
       const result = await strategy.validate('testuser', 'password123');
 
       expect(result).toEqual(mockUser);
-      expect(authService.validateUser).toHaveBeenCalledWith('testuser', 'password123');
+      expect(authService.validateUser).toHaveBeenCalledWith(
+        'testuser',
+        'password123',
+      );
     });
 
     it('should throw UnauthorizedException when credentials are invalid', async () => {
       mockAuthService.validateUser.mockResolvedValue(null);
 
-      await expect(strategy.validate('testuser', 'wrongpassword')).rejects.toThrow(UnauthorizedException);
+      await expect(
+        strategy.validate('testuser', 'wrongpassword'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });

@@ -44,7 +44,15 @@ export class DocumentSeeder {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ];
 
-    const extensions = ['.pdf', '.doc', '.docx', '.txt', '.csv', '.xls', '.xlsx'];
+    const extensions = [
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.txt',
+      '.csv',
+      '.xls',
+      '.xlsx',
+    ];
 
     for (let i = 0; i < totalDocuments; i++) {
       const user = faker.helpers.arrayElement(users);
@@ -56,12 +64,16 @@ export class DocumentSeeder {
       const filePath = path.join(uploadsDir, filename);
 
       // Create a dummy file
-      const content = faker.lorem.paragraphs(faker.number.int({ min: 1, max: 10 }));
+      const content = faker.lorem.paragraphs(
+        faker.number.int({ min: 1, max: 10 }),
+      );
       fs.writeFileSync(filePath, content);
 
       const document = documentRepository.create({
         title: faker.lorem.words(faker.number.int({ min: 2, max: 8 })),
-        description: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.7 }),
+        description: faker.helpers.maybe(() => faker.lorem.paragraph(), {
+          probability: 0.7,
+        }),
         filename,
         originalName,
         mimetype: mimeType,
@@ -72,22 +84,46 @@ export class DocumentSeeder {
           { weight: 50, value: DocumentStatus.PUBLISHED },
           { weight: 10, value: DocumentStatus.ARCHIVED },
         ]),
-        content: faker.helpers.maybe(() => faker.lorem.paragraphs(3), { probability: 0.8 }),
-        tags: faker.helpers.maybe(() => 
-          faker.helpers.arrayElements(
-            ['important', 'urgent', 'review', 'final', 'draft', 'approved', 'confidential', 'public'],
-            { min: 1, max: 4 }
-          ), 
-          { probability: 0.6 }
+        content: faker.helpers.maybe(() => faker.lorem.paragraphs(3), {
+          probability: 0.8,
+        }),
+        tags: faker.helpers.maybe(
+          () =>
+            faker.helpers.arrayElements(
+              [
+                'important',
+                'urgent',
+                'review',
+                'final',
+                'draft',
+                'approved',
+                'confidential',
+                'public',
+              ],
+              { min: 1, max: 4 },
+            ),
+          { probability: 0.6 },
         ),
-        metadata: faker.helpers.maybe(() => ({
-          author: faker.person.fullName(),
-          department: faker.helpers.arrayElement(['HR', 'IT', 'Finance', 'Marketing', 'Sales']),
-          version: faker.system.semver(),
-          language: faker.helpers.arrayElement(['en', 'es', 'fr', 'de']),
-        }), { probability: 0.5 }),
+        metadata: faker.helpers.maybe(
+          () => ({
+            author: faker.person.fullName(),
+            department: faker.helpers.arrayElement([
+              'HR',
+              'IT',
+              'Finance',
+              'Marketing',
+              'Sales',
+            ]),
+            version: faker.system.semver(),
+            language: faker.helpers.arrayElement(['en', 'es', 'fr', 'de']),
+          }),
+          { probability: 0.5 },
+        ),
         createdById: user.id,
-        updatedById: faker.helpers.maybe(() => faker.helpers.arrayElement(users).id, { probability: 0.3 }),
+        updatedById: faker.helpers.maybe(
+          () => faker.helpers.arrayElement(users).id,
+          { probability: 0.3 },
+        ),
         createdAt: faker.date.past({ years: 2 }),
       });
 
@@ -97,7 +133,9 @@ export class DocumentSeeder {
       if (documents.length === batchSize || i === totalDocuments - 1) {
         await documentRepository.save(documents);
         documents.length = 0;
-        console.log(`Created ${Math.min((Math.floor(i / batchSize) + 1) * batchSize, totalDocuments)} documents...`);
+        console.log(
+          `Created ${Math.min((Math.floor(i / batchSize) + 1) * batchSize, totalDocuments)} documents...`,
+        );
       }
     }
 

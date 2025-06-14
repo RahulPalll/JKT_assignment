@@ -144,7 +144,7 @@ describe('HealthService', () => {
       dataSource.query.mockRejectedValue(dbError);
 
       await expect(service.getReadinessStatus()).rejects.toThrow(
-        'Application is not ready'
+        'Application is not ready',
       );
     });
   });
