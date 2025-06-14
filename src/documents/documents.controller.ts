@@ -17,7 +17,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { createReadStream } from 'fs';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto, UpdateDocumentDto } from './dto';
 import { PaginationDto } from '../common/dto';
@@ -37,6 +37,39 @@ export class DocumentsController {
   @ApiConsumes('multipart/form-data')
   @ApiResponse({ status: 201, description: 'Document created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid file or data' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'The document file to upload',
+        },
+        title: {
+          type: 'string',
+          description: 'Document title',
+        },
+        description: {
+          type: 'string',
+          description: 'Document description',
+        },
+        status: {
+          type: 'string',
+          enum: ['draft', 'published', 'archived'],
+          description: 'Document status',
+        },
+        tags: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+          description: 'Document tags',
+        },
+      },
+      required: ['file', 'title'],
+    },
+  })
   @Roles(UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER)
   @UseGuards(RolesGuard)
   @Post()
